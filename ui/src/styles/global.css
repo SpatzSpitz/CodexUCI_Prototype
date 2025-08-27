@@ -1,0 +1,50 @@
+:root {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  background: #1e1e1e;
+  color: #fff;
+  font-family: sans-serif;
+}
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.strips {
+  display: flex;
+  justify-content: space-around;
+  flex: 1;
+  align-items: flex-end;
+}
+.fader-strip {
+  width: 100px;
+  padding: 10px;
+  text-align: center;
+}
+.slider {
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+  height: 200px;
+}
+.level-meter {
+  width: 20px;
+  height: 200px;
+  background: #333;
+  margin: 10px auto;
+  position: relative;
+}
+.level-meter .bar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: lime;
+}
+.status {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+.status.connected { color: lime; }
+.status.reconnecting { color: orange; }
+.status.error { color: red; }
