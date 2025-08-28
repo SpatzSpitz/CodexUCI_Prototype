@@ -1,13 +1,26 @@
 import { WebSocketServer } from 'ws';
 import QSysClient from './qsysClient.js';
+import QSysTcpClient from './qsysTcpClient.js';
 import path from 'path';
 import fs from 'fs';
 
-const PORT = 8080;
-const QSYS_URL = 'ws://192.168.10.5:1710';
+const PORT = Number(process.env.PORT || 8080);
+// QRC endpoint typically requires the /qrc path and the jsonrpc subprotocol
+const QSYS_URL = process.env.QSYS_URL; // only used for WS mode
 const channelsPath = path.join(process.cwd(), '..', 'channels.json');
 
-const qsys = new QSysClient(QSYS_URL, channelsPath);
+let qsys;
+if (QSYS_URL && /^wss?:\/\//i.test(QSYS_URL)) {
+  // WebSocket mode (rare for QRC)
+  qsys = new QSysClient(QSYS_URL, channelsPath);
+  console.log(`[Gateway] Starting on port ${PORT} and connecting to Q-SYS WS: ${QSYS_URL}`);
+} else {
+  // TCP QRC mode (default)
+  const host = process.env.QSYS_HOST || '192.168.10.5';
+  const port = Number(process.env.QSYS_PORT || 1710);
+  qsys = new QSysTcpClient(host, port, channelsPath);
+  console.log(`[Gateway] Starting on port ${PORT} and connecting to Q-SYS TCP: ${host}:${port}`);
+}
 qsys.connect();
 
 const wss = new WebSocketServer({ port: PORT, path: '/ws' });
