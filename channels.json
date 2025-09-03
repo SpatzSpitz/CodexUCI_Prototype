@@ -1,18 +1,84 @@
 {
   "channels": [
-    { "id": "hand_mic_1", "label": "Hand Mic 1", "order": 1,
-      "controls": { "gain": "NC_HAND_MIC_1_GAIN", "mute": "NC_HAND_MIC_1_MUTE", "level": "NC_HAND_MIC_1_LEVEL" } },
-    { "id": "hand_mic_2", "label": "Hand Mic 2", "order": 2,
-      "controls": { "gain": "NC_HAND_MIC_2_GAIN", "mute": "NC_HAND_MIC_2_MUTE", "level": "NC_HAND_MIC_2_LEVEL" } },
-    { "id": "headset_1",  "label": "Headset 1",  "order": 3,
-      "controls": { "gain": "NC_HEADSET_1_GAIN", "mute": "NC_HEADSET_1_MUTE", "level": "NC_HEADSET_1_LEVEL" } },
-    { "id": "headset_2",  "label": "Headset 2",  "order": 4,
-      "controls": { "gain": "NC_HEADSET_2_GAIN", "mute": "NC_HEADSET_2_MUTE", "level": "NC_HEADSET_2_LEVEL" } },
-    { "id": "bluetooth",  "label": "Bluetooth",  "order": 5,
-      "controls": { "gain": "NC_BLUETOOTH_GAIN", "mute": "NC_BLUETOOTH_MUTE", "level": "NC_BLUETOOTH_LEVEL" } },
-    { "id": "aux",        "label": "AUX",        "order": 6,
-      "controls": { "gain": "NC_AUX_GAIN", "mute": "NC_AUX_MUTE", "level": "NC_AUX_LEVEL" } },
-    { "id": "hdmi",       "label": "HDMI",       "order": 7,
-      "controls": { "gain": "NC_HDMI_GAIN", "mute": "NC_HDMI_MUTE", "level": "NC_HDMI_LEVEL" } }
+    {
+      "id": "hand_mic_1",
+      "label": "Hand Mic 1",
+      "order": 1,
+      "controls": {
+        "gain": "NC_HAND_MIC_1_GAIN",
+        "mute": "NC_HAND_MIC_1_MUTE",
+        "level": "NC_HAND_MIC_1_LEVEL"
+      }
+    },
+    {
+      "id": "hand_mic_2",
+      "label": "Hand Mic 2",
+      "order": 2,
+      "controls": {
+        "gain": "NC_HAND_MIC_2_GAIN",
+        "mute": "NC_HAND_MIC_2_MUTE",
+        "level": "NC_HAND_MIC_2_LEVEL"
+      }
+    },
+    {
+      "id": "headset_1",
+      "label": "Headset 1",
+      "order": 3,
+      "controls": {
+        "gain": "NC_HEADSET_1_GAIN",
+        "mute": "NC_HEADSET_1_MUTE",
+        "level": "NC_HEADSET_1_LEVEL"
+      }
+    },
+    {
+      "id": "headset_2",
+      "label": "Headset 2",
+      "order": 4,
+      "controls": {
+        "gain": "NC_HEADSET_2_GAIN",
+        "mute": "NC_HEADSET_2_MUTE",
+        "level": "NC_HEADSET_2_LEVEL"
+      }
+    },
+    {
+      "id": "bluetooth",
+      "label": "BlauZand",
+      "order": 5,
+      "controls": {
+        "gain": "NC_BLUETOOTH_GAIN",
+        "mute": "NC_BLUETOOTH_MUTE",
+        "level": "NC_BLUETOOTH_LEVEL"
+      }
+    },
+    {
+      "id": "aux",
+      "label": "AUX",
+      "order": 6,
+      "controls": {
+        "gain": "NC_AUX_GAIN",
+        "mute": "NC_AUX_MUTE",
+        "level": "NC_AUX_LEVEL"
+      }
+    },
+    {
+      "id": "hdmi",
+      "label": "HDMI",
+      "order": 7,
+      "controls": {
+        "gain": "NC_HDMI_GAIN",
+        "mute": "NC_HDMI_MUTE",
+        "level": "NC_HDMI_LEVEL"
+      }
+    },
+    {
+      "id": "clickShare",
+      "label": "Click Share",
+      "order": 8,
+      "controls": {
+        "gain": "NC_CLICKSHARE_GAIN",
+        "mute": "NC_CLICKSHARE_MUTE",
+        "level": "NC_CLICKSHARE_LEVEL"
+      }
+    }
   ]
 }

@@ -159,6 +159,21 @@ body {
 .status.reconnecting { color: #f5d90a; }
 .status.error { color: var(--power-off); }
 
+/* --- Editor overlay --- */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal { width: min(1100px, 96vw); max-height: 90vh; overflow: auto; background: var(--bg-elev); border-radius: 12px; box-shadow: var(--shadow); }
+.modal-header { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.06); position: sticky; top: 0; background: var(--bg-elev); }
+.modal-header .spacer { flex: 1; }
+.editor { padding: 12px; }
+.table { display: grid; grid-template-columns: 1.2fr 1.2fr 0.6fr 1fr 1fr 1fr auto; gap: 8px; align-items: center; }
+.table.head { font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.table.row { margin-bottom: 6px; }
+.table input { width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.12); background: #1f2326; color: var(--text); }
+.editor-actions { margin-top: 8px; }
+.btn { padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); background: #2c3136; color: var(--text); cursor: pointer; }
+.btn.primary { background: #3a79ff; border-color: #3a79ff; }
+.btn.danger { background: #4a2b2b; border-color: #632f2f; }
+
 /* Icon variants per channel (data-driven via class from id) */
 .strip-hand_mic_1 > h3::before, .strip-hand_mic_2 > h3::before {
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M12 14a4 4 0 0 0 4-4V5a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4Zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 16 0h-2ZM11 21h2v-3h-2v3Z'/></svg>") center/30px 30px no-repeat;

@@ -26,19 +26,60 @@ qsys.connect();
 
 // Create a small HTTP server to serve channels.json and host the WebSocket
 const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url && req.url.startsWith('/channels.json')) {
+  const url = req.url || '/';
+  // CORS for UI dev server
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
+
+  if (req.method === 'GET' && url.startsWith('/channels.json')) {
     try {
       res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Access-Control-Allow-Origin', '*');
       fs.createReadStream(channelsPath).pipe(res);
     } catch (e) {
       res.statusCode = 500;
       res.end(JSON.stringify({ error: 'failed to read channels.json' }));
     }
-  } else {
-    res.statusCode = 404;
-    res.end('Not Found');
+    return;
   }
+
+  if (req.method === 'PUT' && url.startsWith('/channels.json')) {
+    // Receive full body
+    let body = '';
+    req.setEncoding('utf-8');
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const parsed = JSON.parse(body);
+        if (!parsed || !Array.isArray(parsed.channels)) throw new Error('invalid structure');
+        // Basic normalization: sort by order ascending
+        parsed.channels.sort((a, b) => (Number(a.order||0) - Number(b.order||0)));
+        fs.writeFileSync(channelsPath, JSON.stringify(parsed, null, 2));
+        // Re-subscribe controls in the backend
+        try {
+          if (typeof qsys.subscribeAll === 'function') qsys.subscribeAll();
+          if (typeof qsys.setupChangeGroup === 'function') qsys.setupChangeGroup();
+        } catch (e) {
+          console.warn('re-subscribe after channels update failed:', e && e.message || e);
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ error: 'invalid JSON', message: String(e && e.message || e) }));
+      }
+    });
+    return;
+  }
+
+  res.statusCode = 404;
+  res.end('Not Found');
 });
 
 const wss = new WebSocketServer({ server, path: '/ws' });
