@@ -1,0 +1,6 @@
+*** Begin Patch
+*** Update File: ui/src/styles/app.css
+@@
+-@import './global.css';
++@import './global.css';
+*** End Patch

@@ -24,8 +24,9 @@ export default function Slider({ value, onChange, min = -100, max = 20, step = 0
       max={max}
       step={step}
       value={value}
-      onChange={handle}
+      onChange={handle} onInput={handle}
       className="slider"
     />
   );
 }
+
