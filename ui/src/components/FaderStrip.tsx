@@ -4,6 +4,11 @@ import MuteButton from './MuteButton';
 import Slider from './Slider';
 import LevelMeter from './LevelMeter';
 import { AudioAdapter } from '../adapters/AudioAdapter';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 interface Props {
   channel: Channel;
@@ -11,7 +16,6 @@ interface Props {
 }
 
 export default function FaderStrip({ channel, adapter }: Props) {
-  // Gain in dB (-100..20), level in dBFS
   const [gain, setGain] = useState(0);
   const [mute, setMute] = useState(false);
   const [level, setLevel] = useState(-120);
@@ -26,7 +30,6 @@ export default function FaderStrip({ channel, adapter }: Props) {
 
   const onGain = (v: number) => {
     setGain(v);
-    // Send dB value through to Q-SYS
     adapter.setControl(channel.controls.gain, v);
   };
 
@@ -35,12 +38,21 @@ export default function FaderStrip({ channel, adapter }: Props) {
   };
 
   return (
-    <div className={`fader-strip strip-${channel.id}`}>
-      <h3>{channel.label}</h3>
-      <MuteButton active={mute} onToggle={toggleMute} />
-      <Slider value={gain} onChange={onGain} />
-      <LevelMeter level={level} />
-    </div>
+    <Card elevation={6} sx={{ borderRadius: 2, width: 220, height: '100%' }}>
+      <CardContent>
+        <Stack spacing={2} alignItems="center">
+          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{channel.label}</Typography>
+          <Grid container spacing={2} alignItems="center" justifyContent="center">
+            <Grid item>
+              <Slider value={gain} onChange={onGain} />
+            </Grid>
+            <Grid item>
+              <LevelMeter level={level} />
+            </Grid>
+          </Grid>
+          <MuteButton active={mute} onToggle={toggleMute} />
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
-

@@ -2,7 +2,7 @@
   "channels": [
     {
       "id": "hand_mic_1",
-      "label": "Pfarrer 7",
+      "label": "Hand Mic 1",
       "order": 1,
       "controls": {
         "gain": "NC_HAND_MIC_1_GAIN",

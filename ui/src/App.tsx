@@ -5,7 +5,12 @@ import StatusBar from './components/StatusBar';
 import { QSysAdapter } from './adapters/QSysAdapter';
 import { Channel } from './types/Channel';
 import { loadChannels } from './config/channels.loader';
-import './styles/app.css';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
 const adapter = new QSysAdapter();
 
@@ -20,28 +25,35 @@ export default function App() {
     adapter.connect();
   }, []);
 
+  const theme = createTheme({ palette: { mode: 'dark' } });
+
   return (
-    <div className="app">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 10px' }}>
-        <StatusBar status={status} />
-        <div style={{ flex: 1 }} />
-        <button className="btn" onClick={() => setEditing(true)}>Kan√§le bearbeiten</button>
-      </div>
-      <div className="strips">
-        {channels.map((c: Channel) => (
-          <FaderStrip key={c.id} channel={c} adapter={adapter} />
-        ))}
-      </div>
-      <ChannelEditor
-        open={editing}
-        channels={channels}
-        onClose={() => setEditing(false)}
-        onSaved={(updated) => {
-          setEditing(false);
-          // Neuladen aus Gateway, um Quelle der Wahrheit zu bleiben
-          loadChannels().then(setChannels);
-        }}
-      />
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Container maxWidth={false} sx={{ py: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
+          <StatusBar status={status} />
+          <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
+            <Button variant="outlined" size="small" onClick={() => setEditing(true)}>Kan‰le bearbeiten</Button>
+          </Stack>
+        </Stack>
+        <Grid container spacing={2} alignItems="stretch">
+          {channels.map((c: Channel) => (
+            <Grid item key={c.id} xs={12} sm={6} md={4} lg={3} xl={2}>
+              <FaderStrip channel={c} adapter={adapter} />
+            </Grid>
+          ))}
+        </Grid>
+        <ChannelEditor
+          open={editing}
+          channels={channels}
+          onClose={() => setEditing(false)}
+          onSaved={() => {
+            setEditing(false);
+            loadChannels().then(setChannels);
+          }}
+        />
+      </Container>
+    </ThemeProvider>
   );
 }
