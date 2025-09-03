@@ -9,6 +9,8 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { IconByKey } from './icons';
 
 interface Props {
   channel: Channel;
@@ -41,7 +43,10 @@ export default function FaderStrip({ channel, adapter }: Props) {
     <Card elevation={6} sx={{ borderRadius: 2, width: 220, height: '100%' }}>
       <CardContent>
         <Stack spacing={2} alignItems="center">
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{channel.label}</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+            <IconByKey name={channel.icon} size={36} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, textAlign: 'center' }}>{channel.label}</Typography>
+          </Box>
           <Grid container spacing={2} alignItems="center" justifyContent="center">
             <Grid item>
               <Slider value={gain} onChange={onGain} />

@@ -8,7 +8,8 @@
         "gain": "NC_HAND_MIC_1_GAIN",
         "mute": "NC_HAND_MIC_1_MUTE",
         "level": "NC_HAND_MIC_1_LEVEL"
-      }
+      },
+      "icon": "headset"
     },
     {
       "id": "hand_mic_2",
@@ -41,23 +42,23 @@
       }
     },
     {
-      "id": "bluetooth",
-      "label": "BlauZand",
-      "order": 5,
-      "controls": {
-        "gain": "NC_BLUETOOTH_GAIN",
-        "mute": "NC_BLUETOOTH_MUTE",
-        "level": "NC_BLUETOOTH_LEVEL"
-      }
-    },
-    {
       "id": "aux",
       "label": "AUX",
-      "order": 6,
+      "order": 5,
       "controls": {
         "gain": "NC_AUX_GAIN",
         "mute": "NC_AUX_MUTE",
         "level": "NC_AUX_LEVEL"
+      }
+    },
+    {
+      "id": "bluetooth",
+      "label": "Bluetooth",
+      "order": 6,
+      "controls": {
+        "gain": "NC_BLUETOOTH_GAIN",
+        "mute": "NC_BLUETOOTH_MUTE",
+        "level": "NC_BLUETOOTH_LEVEL"
       }
     },
     {

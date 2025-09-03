@@ -1,10 +1,9 @@
-import { useTranslation } from 'react-i18next';
+import Chip from '@mui/material/Chip';
 
-interface Props {
-  status: string;
-}
+interface Props { status: string; }
 
 export default function StatusBar({ status }: Props) {
-  const { t } = useTranslation();
-  return <div className={`status ${status}`}>{t(status)}</div>;
+  const color = status === 'connected' ? 'success' : status === 'reconnecting' ? 'warning' : status === 'error' ? 'error' : 'default';
+  const label = status.charAt(0).toUpperCase() + status.slice(1);
+  return <Chip size="small" color={color as any} label={label} variant={color === 'default' ? 'outlined' : 'filled'} />;
 }

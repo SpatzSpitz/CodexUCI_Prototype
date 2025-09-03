@@ -16,6 +16,7 @@ export default function Slider({ value, onChange, min = -100, max = 20, step = 0
       <SliderBase
         aria-label="Gain"
         orientation="vertical"
+        valueLabelDisplay="auto"
         value={value}
         min={min}
         max={max}
