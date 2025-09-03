@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import FaderStrip from './components/FaderStrip';
 import ChannelEditor from './components/ChannelEditor';
 import StatusBar from './components/StatusBar';
@@ -34,7 +34,7 @@ export default function App() {
         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
           <StatusBar status={status} />
           <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
-            <Button variant="outlined" size="small" onClick={() => setEditing(true)}>Kan�le bearbeiten</Button>
+            <Button variant="outlined" size="small" onClick={() => setEditing(true)}>Kanäle bearbeiten</Button>
           </Stack>
         </Stack>
         <Grid container spacing={2} alignItems="stretch">
@@ -57,3 +57,4 @@ export default function App() {
     </ThemeProvider>
   );
 }
+

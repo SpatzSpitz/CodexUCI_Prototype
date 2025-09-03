@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Channel } from '../types/Channel';
 import MuteButton from './MuteButton';
 import Slider from './Slider';
@@ -61,3 +61,4 @@ export default function FaderStrip({ channel, adapter }: Props) {
     </Card>
   );
 }
+

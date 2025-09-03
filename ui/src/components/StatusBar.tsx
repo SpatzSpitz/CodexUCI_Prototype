@@ -1,4 +1,4 @@
-import Chip from '@mui/material/Chip';
+﻿import Chip from '@mui/material/Chip';
 
 interface Props { status: string; }
 
@@ -7,3 +7,4 @@ export default function StatusBar({ status }: Props) {
   const label = status.charAt(0).toUpperCase() + status.slice(1);
   return <Chip size="small" color={color as any} label={label} variant={color === 'default' ? 'outlined' : 'filled'} />;
 }
+

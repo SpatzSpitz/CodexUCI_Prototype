@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+Ôªøimport { useEffect, useMemo, useState } from "react";
 import { Channel } from "../types/Channel";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -66,7 +66,7 @@ export default function ChannelEditor({ open, channels, onClose, onSaved }: Prop
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle>Kan‰le bearbeiten</DialogTitle>
+      <DialogTitle>Kan√§le bearbeiten</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2}>
           {sorted.map((c, visualIdx) => {
@@ -85,9 +85,9 @@ export default function ChannelEditor({ open, channels, onClose, onSaved }: Prop
                     </Button>
                   </Grid>
                   <Grid item xs={12} sm={12} md={2} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
-                    <Tooltip title="Zeile lˆschen">
+                    <Tooltip title="Zeile l√∂schen">
                       <span>
-                        <IconButton color="error" onClick={() => delRow(idx)} disabled={busy} aria-label="Zeile lˆschen"><DeleteIcon /></IconButton>
+                        <IconButton color="error" onClick={() => delRow(idx)} disabled={busy} aria-label="Zeile l√∂schen"><DeleteIcon /></IconButton>
                       </span>
                     </Tooltip>
                   </Grid>
@@ -102,13 +102,13 @@ export default function ChannelEditor({ open, channels, onClose, onSaved }: Prop
             );
           })}
           <Stack direction="row" spacing={1}>
-            <Button startIcon={<AddIcon />} onClick={addRow} disabled={busy}>Kanal hinzuf¸gen</Button>
-            <Typography variant="caption" color="text.secondary">IDs m¸ssen eindeutig sein.</Typography>
+            <Button startIcon={<AddIcon />} onClick={addRow} disabled={busy}>Kanal hinzuf√ºgen</Button>
+            <Typography variant="caption" color="text.secondary">IDs m√ºssen eindeutig sein.</Typography>
           </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={busy}>Schlieﬂen</Button>
+        <Button onClick={onClose} disabled={busy}>Schlie√üen</Button>
         <Button onClick={save} variant="contained" disabled={busy}>Speichern</Button>
       </DialogActions>
       <IconPickerDialog
@@ -120,3 +120,4 @@ export default function ChannelEditor({ open, channels, onClose, onSaved }: Prop
     </Dialog>
   );
 }
+

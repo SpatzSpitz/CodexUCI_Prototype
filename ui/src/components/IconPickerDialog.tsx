@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+Ôªøimport { useMemo, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -24,14 +24,14 @@ export default function IconPickerDialog({ open, value, onClose, onSelect }: Pro
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Icon w‰hlen</DialogTitle>
+      <DialogTitle>Icon w√§hlen</DialogTitle>
       <DialogContent dividers>
         <TextField
           autoFocus
           fullWidth
           size="small"
           margin="normal"
-          placeholder="SucheÖ"
+          placeholder="Suche‚Ä¶"
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
@@ -50,3 +50,4 @@ export default function IconPickerDialog({ open, value, onClose, onSelect }: Pro
     </Dialog>
   );
 }
+
