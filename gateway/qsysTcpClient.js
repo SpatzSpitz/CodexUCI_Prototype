@@ -21,6 +21,9 @@ export default class QSysTcpClient extends EventEmitter {
     this.muteSet = new Set();
     this.user = process.env.QSYS_USER || 'admin';
     this.password = process.env.QSYS_PASSWORD || '';
+    this.debug = process.env.QSYS_DEBUG === '1';
+    this.changeGroupId = process.env.QSYS_CG_ID || 'codex-gateway';
+    this.pollMs = Number(process.env.QSYS_POLL_MS || 250);
   }
 
   connect() {
@@ -41,7 +44,7 @@ export default class QSysTcpClient extends EventEmitter {
         console.log('[Q-SYS TCP] Logon OK');
         this.subscribeAll();
         this.startKeepAlive();
-        this.startPolling();
+        this.setupChangeGroup();
       });
     });
 
@@ -70,12 +73,37 @@ export default class QSysTcpClient extends EventEmitter {
       let msg;
       try { msg = JSON.parse(frame); }
       catch (e) { console.error('[Q-SYS TCP] invalid JSON', e); continue; }
-      // Notifications (e.g., EngineStatus)
+      // Notifications (e.g., EngineStatus, NamedControl updates)
       if (msg.method) {
-        if (msg.method === 'EngineStatus') {
+        const method = String(msg.method || '');
+        const p = msg.params || {};
+        if (method === 'EngineStatus') {
           // informational
-          const p = msg.params || {};
           console.log('[Q-SYS TCP] EngineStatus:', p.State, p.DesignName);
+        } else {
+          // Try to normalize any control-like update payloads
+          const maybeItems = Array.isArray(p) ? p : [p];
+          for (const item of maybeItems) {
+            if (!item || (typeof item !== 'object')) continue;
+            const name = item.Name || item.name || item.Control || item.control || item.Identifier;
+            let value = (Object.prototype.hasOwnProperty.call(item, 'Value')) ? item.Value : item.value;
+            if (value == null && typeof item.String !== 'undefined') value = item.String;
+            if (name != null && typeof value !== 'undefined') {
+              let outVal = value;
+              if (this.muteSet.has(name)) {
+                if (typeof value === 'number') outVal = value >= 0.5;
+                else if (typeof value === 'string') outVal = value === '1' || String(value).toLowerCase() === 'true';
+              }
+              const prev = this.cache[name];
+              this.cache[name] = outVal;
+              if (prev !== outVal) {
+                this.emit('update', { control: name, value: outVal });
+              }
+            }
+          }
+          if (this.debug) {
+            console.log('[Q-SYS TCP] Notification raw:', method, JSON.stringify(p));
+          }
         }
         continue;
       }
@@ -107,34 +135,23 @@ export default class QSysTcpClient extends EventEmitter {
     const cfg = JSON.parse(raw);
     this.controls = cfg.channels.flatMap(c => [c.controls.gain, c.controls.mute, c.controls.level]);
     this.muteSet = new Set(cfg.channels.map(c => c.controls.mute));
+    // We seed via ChangeGroup polling; explicit subscribe is not required
   }
 
   startPolling() {
     this.stopPolling();
     const poll = () => {
       if (!this.socket || !this.socket.writable || this.controls.length === 0) return;
-      // Use Control.Get with array of names
-      this.sendRpc('Control.Get', this.controls, (err, result) => {
-        if (err || !Array.isArray(result)) return;
-        for (const item of result) {
-          const name = item.Name || item.name;
-          const value = (Object.prototype.hasOwnProperty.call(item, 'Value')) ? item.Value : item.value;
-          if (typeof name === 'undefined') continue;
-          let outVal = value;
-          if (this.muteSet.has(name) && typeof value !== 'undefined') {
-            if (typeof value === 'number') outVal = value >= 0.5; // if numeric mute
-            else if (typeof value === 'string') outVal = value === '1' || value.toLowerCase() === 'true';
-          }
-          const prev = this.cache[name];
-          this.cache[name] = outVal;
-          if (prev !== outVal) {
-            this.emit('update', { control: name, value: outVal });
-          }
+      this.sendRpc('ChangeGroup.Poll', { Id: this.changeGroupId }, (err, res) => {
+        if (err) {
+          if (this.debug) console.warn('[Q-SYS TCP] ChangeGroup.Poll error', JSON.stringify(err));
+          return;
         }
+        this.handleChangeGroupResult(res);
       });
     };
     poll();
-    this.pollTimer = setInterval(poll, Number(process.env.QSYS_POLL_MS || 200));
+    this.pollTimer = setInterval(poll, this.pollMs);
   }
 
   stopPolling() {
@@ -160,5 +177,40 @@ export default class QSysTcpClient extends EventEmitter {
     try { this.socket.write(frame, 'utf8'); }
     catch (e) { console.error('[Q-SYS TCP] send failed', e); }
   }
-}
 
+  setupChangeGroup() {
+    // Destroy (ignore errors), add controls, invalidate, then start polling
+    this.sendRpc('ChangeGroup.Destroy', { Id: this.changeGroupId }, () => {
+      this.sendRpc('ChangeGroup.AddControl', { Id: this.changeGroupId, Controls: this.controls }, (err) => {
+        if (err) {
+          console.error('[Q-SYS TCP] ChangeGroup.AddControl error', JSON.stringify(err));
+          return;
+        }
+        this.sendRpc('ChangeGroup.Invalidate', { Id: this.changeGroupId }, () => {
+          this.startPolling();
+        });
+      });
+    });
+  }
+
+  handleChangeGroupResult(res) {
+    if (!res) return;
+    const changes = Array.isArray(res?.Changes) ? res.Changes : (Array.isArray(res) ? res : []);
+    for (const item of changes) {
+      if (!item || typeof item !== 'object') continue;
+      const name = item.Name || item.name;
+      if (!name) continue;
+      let value = (Object.prototype.hasOwnProperty.call(item, 'Value')) ? item.Value : item.value;
+      if (value == null && typeof item.String !== 'undefined') value = item.String;
+      if (typeof value === 'undefined') continue;
+      let outVal = value;
+      if (this.muteSet.has(name)) {
+        if (typeof value === 'number') outVal = value >= 0.5;
+        else if (typeof value === 'string') outVal = value === '1' || String(value).toLowerCase() === 'true' || String(value).toLowerCase() === 'muted';
+      }
+      const prev = this.cache[name];
+      this.cache[name] = outVal;
+      if (prev !== outVal) this.emit('update', { control: name, value: outVal });
+    }
+  }
+}

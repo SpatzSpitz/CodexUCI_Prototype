@@ -11,9 +11,10 @@ interface Props {
 }
 
 export default function FaderStrip({ channel, adapter }: Props) {
+  // Gain in dB (-100..20), level in dBFS
   const [gain, setGain] = useState(0);
   const [mute, setMute] = useState(false);
-  const [level, setLevel] = useState(0);
+  const [level, setLevel] = useState(-120);
 
   useEffect(() => {
     adapter.onState((control, value) => {
@@ -25,6 +26,7 @@ export default function FaderStrip({ channel, adapter }: Props) {
 
   const onGain = (v: number) => {
     setGain(v);
+    // Send dB value through to Q-SYS
     adapter.setControl(channel.controls.gain, v);
   };
 

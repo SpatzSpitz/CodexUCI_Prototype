@@ -1,11 +1,14 @@
 import { useRef } from 'react';
 
 interface Props {
-  value: number;
-  onChange: (v: number) => void;
+  value: number; // expected in dB for our use case
+  onChange: (v: number) => void; // emits dB value
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
-export default function Slider({ value, onChange }: Props) {
+export default function Slider({ value, onChange, min = -100, max = 20, step = 0.5 }: Props) {
   const timeout = useRef<number>();
 
   const handle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,9 +20,10 @@ export default function Slider({ value, onChange }: Props) {
   return (
     <input
       type="range"
-      min={0}
-      max={100}
-      defaultValue={value}
+      min={min}
+      max={max}
+      step={step}
+      value={value}
       onChange={handle}
       className="slider"
     />

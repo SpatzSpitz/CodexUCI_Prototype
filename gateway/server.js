@@ -36,6 +36,14 @@ wss.on('connection', (ws) => {
         qsys.setControl(msg.control, msg.value);
         qsys.cache[msg.control] = msg.value;
         broadcast({ type: 'state', control: msg.control, value: msg.value });
+      } else if (msg.type === 'subscribe' && Array.isArray(msg.controls)) {
+        // Send current cached values for requested controls
+        for (const control of msg.controls) {
+          const value = qsys.cache[control];
+          if (typeof value !== 'undefined') {
+            try { ws.send(JSON.stringify({ type: 'state', control, value })); } catch {}
+          }
+        }
       }
     } catch (e) {
       console.error('bad UI message', e);
