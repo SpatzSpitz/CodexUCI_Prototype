@@ -19,5 +19,6 @@ function dbToPercent(db: number): number {
   const maxDb = 0;
   if (db <= minDb) return 0;
   if (db >= maxDb) return 100;
-  return Math.round(((db - minDb) / (maxDb - minDb)) * 100);
+  return ((db - minDb) / (maxDb - minDb)) * 100;
 }
+

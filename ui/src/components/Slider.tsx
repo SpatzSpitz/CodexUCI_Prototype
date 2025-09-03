@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React from 'react';
 
 interface Props {
   value: number; // expected in dB for our use case
@@ -9,12 +9,8 @@ interface Props {
 }
 
 export default function Slider({ value, onChange, min = -100, max = 20, step = 0.5 }: Props) {
-  const timeout = useRef<number>();
-
-  const handle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = Number(e.target.value);
-    if (timeout.current) window.clearTimeout(timeout.current);
-    timeout.current = window.setTimeout(() => onChange(v), 75);
+    const handle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.currentTarget.valueAsNumber);
   };
 
   return (
@@ -29,4 +25,5 @@ export default function Slider({ value, onChange, min = -100, max = 20, step = 0
     />
   );
 }
+
 
