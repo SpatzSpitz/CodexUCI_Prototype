@@ -9,6 +9,7 @@
   --shadow: 0 2px 8px rgba(0,0,0,.35);
   --radius: 10px;
   --gutter: 16px;
+  --strip-height: clamp(180px, 32vh, 320px);
 
   /* Slider */
   --slider-track: #cfcfcf;
@@ -24,9 +25,7 @@
   --power-on: #00d26a;
 }
 
-html, body {
-  height: 100%;
-}
+html, body { height: 100%; }
 body {
   margin: 0;
   background: var(--bg);
@@ -34,22 +33,22 @@ body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
 }
 
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+.app { display: flex; flex-direction: column; height: 100vh; }
 
+/* Responsive strip rail (horizontal scroll if many) */
 .strips {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(130px, 1fr);
+  grid-auto-columns: clamp(180px, 22vw, 240px);
   gap: var(--gutter);
   padding: 20px;
   align-items: end;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
 }
 
-/* Fader strip layout: header, controls row (slider + meter), mute at bottom */
+/* Fader strip card */
 .fader-strip {
   display: grid;
   grid-template-columns: 1fr 22px; /* slider + narrow meter */
@@ -63,25 +62,27 @@ body {
   padding: 14px 12px 12px;
   box-shadow: var(--shadow);
   column-gap: 12px;
-  overflow: hidden;
+  overflow: hidden; /* keep meter inside rounded corners */
+  scroll-snap-align: start;
 }
 
 /* Header with icon-tile and label */
 .fader-strip > h3 {
-  text-align: center;
-  justify-content: center;
   grid-area: header;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   margin: 0 0 8px 0;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text);
+  text-align: center;
+  pointer-events: none; /* header should not block dragging */
 }
 
-/* Icon tile via pseudo element (same generic icon for now) */
+/* Icon tile via pseudo element (generic default icon) */
 .fader-strip > h3::before {
   content: '';
   display: inline-block;
@@ -91,29 +92,24 @@ body {
   background: radial-gradient(100% 100% at 50% 0%, #3a4046 0%, var(--bg-elev-2) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), var(--shadow);
   -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 14a4 4 0 0 0 4-4V5a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4Zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 16 0h-2ZM11 21h2v-3h-2v3Z"/></svg>') center/30px 30px no-repeat;
-  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 14a4 4 0 0 0 4-4V5a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4Zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 16 0h-2ZM11 21h2v-3h-2v3Z"/></svg>') center/30px 30px no-repeat;
+          mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 14a4 4 0 0 0 4-4V5a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4Zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 16 0h-2ZM11 21h2v-3h-2v3Z"/></svg>') center/30px 30px no-repeat;
   background-color: #cfd3d7;
 }
 
-/* Controls row */
+/* Slider (vertical, native for best interaction) */
 .slider {
   grid-area: slider;
   justify-self: center;
-  writing-mode: bt-lr;
+  writing-mode: bt-lr; /* vertical */
   -webkit-appearance: slider-vertical;
-  height: 260px;
+  height: var(--strip-height);
 }
 
-
-/* Slider track - WebKit */
-/* Slider track - Firefox */
 /* Slim vertical meter next to slider */
 .level-meter {
-  justify-self: end;
-  margin-left: 8px;
   grid-area: meter;
   width: 16px;
-  height: 260px;
+  height: var(--strip-height);
   background: var(--meter-bg);
   border-radius: 6px;
   position: relative;
@@ -151,37 +147,17 @@ body {
   width: 28px;
   height: 28px;
   -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M13 3v8h5l-6 10V13H7l6-10Z"/></svg>') center/contain no-repeat;
-  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M13 3v8h5l-6 10V13H7l6-10Z"/></svg>') center/contain no-repeat;
+          mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M13 3v8h5l-6 10V13H7l6-10Z"/></svg>') center/contain no-repeat;
   background-color: var(--power-off);
 }
 .mute.off::before { background-color: var(--power-on); }
 .mute:active { transform: translateY(1px); }
 
 /* Status bar */
-.status {
-  padding: 6px 10px;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
+.status { padding: 6px 10px; font-size: 0.85rem; color: var(--muted); }
 .status.connected { color: var(--power-on); }
 .status.reconnecting { color: #f5d90a; }
 .status.error { color: var(--power-off); }
-
-
-
-
-
-
-
-.fader-strip > h3 {
-  text-align: center;
-  justify-content: center; pointer-events: none; }
-
-
-
-
-
-
 
 /* Icon variants per channel (data-driven via class from id) */
 .strip-hand_mic_1 > h3::before, .strip-hand_mic_2 > h3::before {

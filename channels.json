@@ -12,9 +12,7 @@
       "controls": { "gain": "NC_BLUETOOTH_GAIN", "mute": "NC_BLUETOOTH_MUTE", "level": "NC_BLUETOOTH_LEVEL" } },
     { "id": "aux",        "label": "AUX",        "order": 6,
       "controls": { "gain": "NC_AUX_GAIN", "mute": "NC_AUX_MUTE", "level": "NC_AUX_LEVEL" } },
-    { "id": "hdmi",       "label": "Video",       "order": 7,
-      "controls": { "gain": "NC_HDMI_GAIN", "mute": "NC_HDMI_MUTE", "level": "NC_HDMI_LEVEL" } },
-    { "id": "hdmi",       "label": "Katze",       "order": 7,
+    { "id": "hdmi",       "label": "HDMI",       "order": 7,
       "controls": { "gain": "NC_HDMI_GAIN", "mute": "NC_HDMI_MUTE", "level": "NC_HDMI_LEVEL" } }
   ]
 }
