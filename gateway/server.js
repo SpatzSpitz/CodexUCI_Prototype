@@ -3,6 +3,7 @@ import QSysClient from './qsysClient.js';
 import QSysTcpClient from './qsysTcpClient.js';
 import path from 'path';
 import fs from 'fs';
+import http from 'http';
 
 const PORT = Number(process.env.PORT || 8080);
 // QRC endpoint typically requires the /qrc path and the jsonrpc subprotocol
@@ -23,7 +24,24 @@ if (QSYS_URL && /^wss?:\/\//i.test(QSYS_URL)) {
 }
 qsys.connect();
 
-const wss = new WebSocketServer({ port: PORT, path: '/ws' });
+// Create a small HTTP server to serve channels.json and host the WebSocket
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET' && req.url && req.url.startsWith('/channels.json')) {
+    try {
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      fs.createReadStream(channelsPath).pipe(res);
+    } catch (e) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: 'failed to read channels.json' }));
+    }
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
+  }
+});
+
+const wss = new WebSocketServer({ server, path: '/ws' });
 const clients = new Set();
 
 wss.on('connection', (ws) => {
@@ -68,4 +86,7 @@ qsys.on('update', (msg) => {
   broadcast({ type: 'state', control: msg.control, value: msg.value });
 });
 
-console.log(`Gateway running on ws://localhost:${PORT}/ws`);
+server.listen(PORT, () => {
+  console.log(`Gateway running on ws://localhost:${PORT}/ws`);
+  console.log(`Serving channels.json at http://localhost:${PORT}/channels.json`);
+});

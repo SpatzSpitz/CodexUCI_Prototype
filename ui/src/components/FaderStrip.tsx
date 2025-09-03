@@ -35,7 +35,7 @@ export default function FaderStrip({ channel, adapter }: Props) {
   };
 
   return (
-    <div className="fader-strip">
+    <div className={`fader-strip strip-${channel.id}`}>
       <h3>{channel.label}</h3>
       <MuteButton active={mute} onToggle={toggleMute} />
       <Slider value={gain} onChange={onGain} />
@@ -43,3 +43,4 @@ export default function FaderStrip({ channel, adapter }: Props) {
     </div>
   );
 }
+
