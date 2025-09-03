@@ -72,7 +72,7 @@ export default function ChannelEditor({ open, channels, onClose, onSaved }: Prop
           {sorted.map((c, visualIdx) => {
             const idx = draft.findIndex(d => d.id === c.id);
             return (
-              <div className="table row" key={c.id}>
+              <div className="table row" key={visualIdx}>
                 <input value={draft[idx].id} onChange={e => setField(idx, 'id', e.target.value)} />
                 <input value={draft[idx].label} onChange={e => setField(idx, 'label', e.target.value)} />
                 <input type="number" value={draft[idx].order} onChange={e => setField(idx, 'order', Number(e.target.value))} />
@@ -91,4 +91,3 @@ export default function ChannelEditor({ open, channels, onClose, onSaved }: Prop
     </div>
   );
 }
-

@@ -2,7 +2,7 @@
   "channels": [
     {
       "id": "hand_mic_1",
-      "label": "Hand Mic 1",
+      "label": "Pfarrer 7",
       "order": 1,
       "controls": {
         "gain": "NC_HAND_MIC_1_GAIN",
@@ -68,16 +68,6 @@
         "gain": "NC_HDMI_GAIN",
         "mute": "NC_HDMI_MUTE",
         "level": "NC_HDMI_LEVEL"
-      }
-    },
-    {
-      "id": "clickShare",
-      "label": "Click Share",
-      "order": 8,
-      "controls": {
-        "gain": "NC_CLICKSHARE_GAIN",
-        "mute": "NC_CLICKSHARE_MUTE",
-        "level": "NC_CLICKSHARE_LEVEL"
       }
     }
   ]
