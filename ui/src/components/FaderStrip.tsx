@@ -23,24 +23,25 @@ export default function FaderStrip({ channel, adapter }: Props) {
   const [level, setLevel] = useState(-120);
 
   useEffect(() => {
-    adapter.onState((control, value) => {
-      if (control === channel.controls.gain) setGain(Number(value));
-      if (control === channel.controls.mute) setMute(Boolean(value));
-      if (control === channel.controls.level) setLevel(Number(value));
+    adapter.onState((asset, control, value) => {
+      if (asset !== channel.id) return;
+      if (control === 'gain') setGain(Number(value));
+      if (control === 'mute') setMute(Boolean(value));
+      if (control === 'level') setLevel(Number(value));
     });
   }, [channel, adapter]);
 
   const onGain = (v: number) => {
     setGain(v);
-    adapter.setControl(channel.controls.gain, v);
+    adapter.setControl(channel.id, 'gain', v);
   };
 
   const toggleMute = () => {
-    adapter.setControl(channel.controls.mute, !mute);
+    adapter.setControl(channel.id, 'mute', !mute);
   };
 
   return (
-    <Card elevation={6} sx={{ borderRadius: 2, width: 220, height: '100%' }}>
+    <Card elevation={6} sx={{ borderRadius: 2, minWidth: 220, height: '100%' }}>
       <CardContent>
         <Stack spacing={2} alignItems="center">
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>

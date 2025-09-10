@@ -1,12 +1,12 @@
 import { GATEWAY_URL } from '../config/app.config';
-import { Message } from '../types/Message';
+import { Message, StateMessage } from '../types/Message';
 
 type Status = 'connecting' | 'connected' | 'reconnecting' | 'error';
 
 export class WebSocketClient {
   private ws?: WebSocket;
   private statusCb: (s: Status) => void = () => {};
-  private stateCb: (c: string, v: number | boolean) => void = () => {};
+  private stateCb: (asset: string, control: string, v: number | boolean) => void = () => {};
 
   connect() {
     this.statusCb('connecting');
@@ -20,12 +20,13 @@ export class WebSocketClient {
     this.ws.onmessage = (ev) => {
       const msg = JSON.parse(ev.data) as Message;
       if (msg.type === 'state') {
-        this.stateCb(msg.control, msg.value);
+        const s = msg as StateMessage;
+        this.stateCb(s.asset, s.control, s.value);
       }
     };
   }
 
   onStatus(cb: (s: Status) => void) { this.statusCb = cb; }
-  onState(cb: (c: string, v: number | boolean) => void) { this.stateCb = cb; }
+  onState(cb: (asset: string, control: string, v: number | boolean) => void) { this.stateCb = cb; }
   send(msg: Message) { this.ws?.send(JSON.stringify(msg)); }
 }

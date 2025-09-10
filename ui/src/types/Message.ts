@@ -1,17 +1,19 @@
 export type SubscribeMessage = {
   type: 'subscribe';
-  controls: string[];
+  controls: string[]; // legacy subscribe by control id (used for seeding)
 };
 
 export type SetMessage = {
   type: 'set';
-  control: string;
+  asset: string;     // asset id
+  control: string;   // control key
   value: number | boolean;
 };
 
 export type StateMessage = {
   type: 'state';
-  control: string;
+  asset: string;     // asset id
+  control: string;   // control key
   value: number | boolean;
 };
 

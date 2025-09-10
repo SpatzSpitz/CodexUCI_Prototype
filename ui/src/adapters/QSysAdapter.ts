@@ -5,11 +5,11 @@ import { loadAssets } from '../config/assets.loader';
 export class QSysAdapter implements AudioAdapter {
   private ws = new WebSocketClient();
   private statusHandlers: ((s: string) => void)[] = [];
-  private stateHandlers: ((c: string, v: number | boolean) => void)[] = [];
+  private stateHandlers: ((asset: string, control: string, v: number | boolean) => void)[] = [];
 
   connect() {
     this.ws.onStatus(s => this.statusHandlers.forEach(h => h(s)));
-    this.ws.onState((c, v) => this.stateHandlers.forEach(h => h(c, v)));
+    this.ws.onState((asset, control, v) => this.stateHandlers.forEach(h => h(asset, control, v)));
     this.ws.connect();
     loadAssets().then(assets => {
       const audioQsys = assets.filter(a => a.category === 'audio' && a.adapter === 'QSYS');
@@ -23,6 +23,6 @@ export class QSysAdapter implements AudioAdapter {
   }
 
   onStatus(cb: (s: string) => void) { this.statusHandlers.push(cb); }
-  onState(cb: (c: string, v: number | boolean) => void) { this.stateHandlers.push(cb); }
-  setControl(control: string, value: number | boolean) { this.ws.send({ type: 'set', control, value }); }
+  onState(cb: (asset: string, control: string, v: number | boolean) => void) { this.stateHandlers.push(cb); }
+  setControl(assetId: string, controlKey: string, value: number | boolean) { this.ws.send({ type: 'set', asset: assetId, control: controlKey, value }); }
 }
