@@ -81,13 +81,19 @@ export default class QSysClient extends EventEmitter {
   }
 
   subscribeAll() {
-    const cfg = loadAssetsFromFile(this.channelsPath);
-    const { controls, muteSet } = listQsysAudioControls(cfg);
-    this.controls = controls;
-    this.muteSet = muteSet;
+    try {
+      const cfg = loadAssetsFromFile(this.channelsPath);
+      const { controls, muteSet } = listQsysAudioControls(cfg);
+      this.controls = controls;
+      this.muteSet = muteSet;
+    } catch (e) {
+      console.warn('[Q-SYS] Failed to load assets for subscribeAll:', e && e.message || e);
+      this.controls = [];
+      this.muteSet = new Set();
+    }
 
     // Subscribe to updates for each control and seed current values
-    controls.forEach((name) => {
+    this.controls.forEach((name) => {
       this.namedControlSubscribe(name, true);
       this.namedControlGet(name);
     });

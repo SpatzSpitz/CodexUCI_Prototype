@@ -132,10 +132,16 @@ export default class QSysTcpClient extends EventEmitter {
   }
 
   subscribeAll() {
-    const cfg = loadAssetsFromFile(this.channelsPath);
-    const { controls, muteSet } = listQsysAudioControls(cfg);
-    this.controls = controls;
-    this.muteSet = muteSet;
+    try {
+      const cfg = loadAssetsFromFile(this.channelsPath);
+      const { controls, muteSet } = listQsysAudioControls(cfg);
+      this.controls = controls;
+      this.muteSet = muteSet;
+    } catch (e) {
+      console.warn('[Q-SYS TCP] Failed to load assets for subscribeAll:', e && e.message || e);
+      this.controls = [];
+      this.muteSet = new Set();
+    }
     // We seed via ChangeGroup polling; explicit subscribe is not required
   }
 

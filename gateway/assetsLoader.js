@@ -1,12 +1,33 @@
 import fs from 'fs';
+import Ajv from 'ajv';
+
+const ajv = new Ajv({ allErrors: true, strict: false });
+let validateFn = null;
+
+export function loadSchema(schemaPath) {
+  const raw = fs.readFileSync(schemaPath, 'utf-8');
+  return JSON.parse(raw);
+}
+
+export function initValidator(schemaPath) {
+  try {
+    const schema = loadSchema(schemaPath);
+    validateFn = ajv.compile(schema);
+  } catch (e) {
+    console.warn('[ASSETS] Schema konnte nicht geladen/kompiliert werden:', e && e.message || e);
+    validateFn = null;
+  }
+}
+
+export function validateAssets(doc) {
+  if (!validateFn) return { valid: true, errors: [] };
+  const valid = validateFn(doc);
+  return { valid, errors: valid ? [] : (validateFn.errors || []) };
+}
 
 export function loadAssetsFromFile(filePath) {
   const raw = fs.readFileSync(filePath, 'utf-8');
   const data = JSON.parse(raw);
-  // Minimal validation: version present and assets is array
-  if (!data || typeof data !== 'object') throw new Error('assets: not an object');
-  if (!data.version || typeof data.version !== 'string') throw new Error('assets: missing version');
-  if (!Array.isArray(data.assets)) throw new Error('assets: assets must be an array');
   return data;
 }
 
@@ -22,10 +43,16 @@ export function listQsysAudioControls(assetsJson) {
   const muteSet = new Set();
   for (const a of audio) {
     const c = a.controls || {};
-    if (c.gain) controls.push(c.gain);
-    if (c.mute) { controls.push(c.mute); muteSet.add(c.mute); }
-    if (c.level) controls.push(c.level);
+    const gain = c.gain;
+    const mute = c.mute;
+    const level = c.level;
+    const norm = v => (typeof v === 'string' ? v : (v && v.id));
+    const gId = norm(gain);
+    const mId = norm(mute);
+    const lId = norm(level);
+    if (gId) controls.push(gId);
+    if (mId) { controls.push(mId); muteSet.add(mId); }
+    if (lId) controls.push(lId);
   }
   return { controls, muteSet };
 }
-

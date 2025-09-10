@@ -4,12 +4,23 @@ import QSysTcpClient from './qsysTcpClient.js';
 import path from 'path';
 import fs from 'fs';
 import http from 'http';
-import { loadAssetsFromFile, writeAssetsToFile } from './assetsLoader.js';
+import { loadAssetsFromFile, writeAssetsToFile, initValidator, validateAssets } from './assetsLoader.js';
 
 const PORT = Number(process.env.PORT || 8080);
 // QRC endpoint typically requires the /qrc path and the jsonrpc subprotocol
 const QSYS_URL = process.env.QSYS_URL; // only used for WS mode
 const assetsPath = path.join(process.cwd(), '..', 'config', 'assets.json');
+const schemaPath = path.join(process.cwd(), '..', 'config', 'assets.schema.json');
+initValidator(schemaPath);
+
+function logValidationWarnings(result) {
+  if (!result || result.valid) return;
+  console.warn('[ASSETS][VALIDATION] WARN: assets.json ist nicht valide:');
+  for (const err of result.errors) {
+    const loc = err.instancePath || '/';
+    console.warn(` - ${loc} ${err.message}`);
+  }
+}
 
 let qsys;
 if (QSYS_URL && /^wss?:\/\//i.test(QSYS_URL)) {
@@ -24,6 +35,14 @@ if (QSYS_URL && /^wss?:\/\//i.test(QSYS_URL)) {
   console.log(`[Gateway] Starting on port ${PORT} and connecting to Q-SYS TCP: ${host}:${port}`);
 }
 qsys.connect();
+
+// Initial validation (warn-only)
+try {
+  const initialDoc = loadAssetsFromFile(assetsPath);
+  logValidationWarnings(validateAssets(initialDoc));
+} catch (e) {
+  console.warn('[ASSETS] Konnte assets.json für initiale Validierung nicht laden:', e && e.message || e);
+}
 
 // Create a small HTTP server to serve assets.json and host the WebSocket
 const server = http.createServer((req, res) => {
@@ -58,10 +77,9 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const parsed = JSON.parse(body);
-        // Minimal validation
-        if (!parsed || typeof parsed !== 'object') throw new Error('invalid structure');
-        if (!parsed.version || typeof parsed.version !== 'string') throw new Error('missing version');
-        if (!Array.isArray(parsed.assets)) throw new Error('assets must be an array');
+        // Warn-only schema validation
+        try { logValidationWarnings(validateAssets(parsed)); } catch {}
+        // Persist regardless of warnings
         writeAssetsToFile(assetsPath, parsed);
         // Re-subscribe controls in the backend
         try {

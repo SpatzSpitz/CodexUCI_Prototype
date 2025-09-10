@@ -3,7 +3,7 @@
   "adapters": {
     "QSYS": {
       "host": "ws://192.168.10.5:1710",
-      "note": "Beispiel; ggf. aus ENV laden"
+      "note": "Beispiel – bei Bedarf aus ENV beziehen"
     },
     "GiraX1": {
       "host": "https://192.168.137.173",
@@ -12,7 +12,7 @@
   },
   "assets": [
     {
-      "id": "HQ_EG_STAGE_HANDMIC_1",
+      "id": "HQ_EG_STAGE_HAND_MIC_1",
       "name": "Hand Mic 1",
       "category": "audio",
       "adapter": "QSYS",
@@ -22,11 +22,11 @@
         "mute": "NC_HAND_MIC_1_MUTE",
         "level": "NC_HAND_MIC_1_LEVEL"
       },
-      "icon": "mic",
+      "icon": "headset",
       "tags": ["speech", "wireless"]
     },
     {
-      "id": "HQ_EG_STAGE_HANDMIC_2",
+      "id": "HQ_EG_STAGE_HAND_MIC_2",
       "name": "Hand Mic 2",
       "category": "audio",
       "adapter": "QSYS",
@@ -36,7 +36,72 @@
         "mute": "NC_HAND_MIC_2_MUTE",
         "level": "NC_HAND_MIC_2_LEVEL"
       },
-      "icon": "mic"
+      "icon": "headset"
+    },
+    {
+      "id": "HQ_EG_STAGE_HEADSET_1",
+      "name": "Headset 1",
+      "category": "audio",
+      "adapter": "QSYS",
+      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "controls": {
+        "gain": "NC_HEADSET_1_GAIN",
+        "mute": "NC_HEADSET_1_MUTE",
+        "level": "NC_HEADSET_1_LEVEL"
+      },
+      "icon": "headset"
+    },
+    {
+      "id": "HQ_EG_STAGE_HEADSET_2",
+      "name": "Headset 2",
+      "category": "audio",
+      "adapter": "QSYS",
+      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "controls": {
+        "gain": "NC_HEADSET_2_GAIN",
+        "mute": "NC_HEADSET_2_MUTE",
+        "level": "NC_HEADSET_2_LEVEL"
+      },
+      "icon": "headset"
+    },
+    {
+      "id": "HQ_EG_STAGE_AUX",
+      "name": "AUX",
+      "category": "audio",
+      "adapter": "QSYS",
+      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "controls": {
+        "gain": "NC_AUX_GAIN",
+        "mute": "NC_AUX_MUTE",
+        "level": "NC_AUX_LEVEL"
+      },
+      "icon": "audiotrack"
+    },
+    {
+      "id": "HQ_EG_STAGE_BLUETOOTH",
+      "name": "Bluetooth",
+      "category": "audio",
+      "adapter": "QSYS",
+      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "controls": {
+        "gain": "NC_BLUETOOTH_GAIN",
+        "mute": "NC_BLUETOOTH_MUTE",
+        "level": "NC_BLUETOOTH_LEVEL"
+      },
+      "icon": "bluetooth"
+    },
+    {
+      "id": "HQ_EG_STAGE_HDMI",
+      "name": "HDMI",
+      "category": "audio",
+      "adapter": "QSYS",
+      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "controls": {
+        "gain": "NC_HDMI_GAIN",
+        "mute": "NC_HDMI_MUTE",
+        "level": "NC_HDMI_LEVEL"
+      },
+      "icon": "hdmi"
     },
 
     {
@@ -52,7 +117,6 @@
       "icon": "lightbulb",
       "tags": ["workbench"]
     },
-
     {
       "id": "HQ_OG_LAGER_ARBEITSPLATZ_SENSOR_LOCK",
       "name": "Lager / OG / Arbeitsplatz – Sensor sperren",
@@ -67,4 +131,3 @@
     }
   ]
 }
-
