@@ -2,6 +2,7 @@ import { WebSocket } from 'ws';
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
+import { loadAssetsFromFile, listQsysAudioControls } from './assetsLoader.js';
 
 export default class QSysClient extends EventEmitter {
   constructor(url, channelsPath) {
@@ -80,12 +81,10 @@ export default class QSysClient extends EventEmitter {
   }
 
   subscribeAll() {
-    const raw = fs.readFileSync(this.channelsPath, 'utf-8');
-    const cfg = JSON.parse(raw);
-    // Collect control names and identify mute controls for boolean mapping
-    const controls = cfg.channels.flatMap(c => [c.controls.gain, c.controls.mute, c.controls.level]);
+    const cfg = loadAssetsFromFile(this.channelsPath);
+    const { controls, muteSet } = listQsysAudioControls(cfg);
     this.controls = controls;
-    this.muteSet = new Set(cfg.channels.map(c => c.controls.mute));
+    this.muteSet = muteSet;
 
     // Subscribe to updates for each control and seed current values
     controls.forEach((name) => {

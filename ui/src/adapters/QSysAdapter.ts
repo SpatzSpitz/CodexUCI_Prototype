@@ -1,6 +1,6 @@
 import { AudioAdapter } from './AudioAdapter';
 import { WebSocketClient } from '../services/websocket';
-import { loadChannels } from '../config/channels.loader';
+import { loadAssets } from '../config/assets.loader';
 
 export class QSysAdapter implements AudioAdapter {
   private ws = new WebSocketClient();
@@ -11,9 +11,14 @@ export class QSysAdapter implements AudioAdapter {
     this.ws.onStatus(s => this.statusHandlers.forEach(h => h(s)));
     this.ws.onState((c, v) => this.stateHandlers.forEach(h => h(c, v)));
     this.ws.connect();
-    loadChannels().then(channels => {
-      const controls = channels.flatMap(ch => Object.values(ch.controls));
-      this.ws.send({ type: 'subscribe', controls });
+    loadAssets().then(assets => {
+      const audioQsys = assets.filter(a => a.category === 'audio' && a.adapter === 'QSYS');
+      const controlIds = audioQsys.flatMap(a => {
+        const c = a.controls || {} as any;
+        const ids = [c.gain, c.mute, c.level].filter(Boolean).map((v: any) => typeof v === 'string' ? v : v.id);
+        return ids;
+      });
+      this.ws.send({ type: 'subscribe', controls: controlIds });
     });
   }
 

@@ -1,26 +1,25 @@
 ﻿import { useEffect, useState } from 'react';
 import FaderStrip from './components/FaderStrip';
-import ChannelEditor from './components/ChannelEditor';
 import StatusBar from './components/StatusBar';
 import { QSysAdapter } from './adapters/QSysAdapter';
 import { Channel } from './types/Channel';
-import { loadChannels } from './config/channels.loader';
+import { Asset } from './types/Asset';
+import { loadAssets } from './config/assets.loader';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 
 const adapter = new QSysAdapter();
 
 export default function App() {
-  const [channels, setChannels] = useState<Channel[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [status, setStatus] = useState('connecting');
-  const [editing, setEditing] = useState(false);
+  // Editor hidden/disabled in phase 1
 
   useEffect(() => {
-    loadChannels().then(setChannels);
+    loadAssets().then(setAssets);
     adapter.onStatus(setStatus);
     adapter.connect();
   }, []);
@@ -33,26 +32,27 @@ export default function App() {
       <Container maxWidth={false} sx={{ py: 1 }}>
         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
           <StatusBar status={status} />
-          <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
-            <Button variant="outlined" size="small" onClick={() => setEditing(true)}>Kanäle bearbeiten</Button>
-          </Stack>
         </Stack>
         <Grid container spacing={2} alignItems="stretch">
-          {channels.map((c: Channel) => (
+          {assets
+            .filter(a => a.category === 'audio' && a.adapter === 'QSYS')
+            .map((a, idx) => ({
+              id: a.id,
+              label: a.name,
+              order: idx,
+              controls: {
+                gain: typeof (a.controls as any).gain === 'string' ? (a.controls as any).gain : (a.controls as any).gain?.id,
+                mute: typeof (a.controls as any).mute === 'string' ? (a.controls as any).mute : (a.controls as any).mute?.id,
+                level: typeof (a.controls as any).level === 'string' ? (a.controls as any).level : (a.controls as any).level?.id,
+              },
+              icon: a.icon,
+            }) as Channel)
+            .map((c: Channel) => (
             <Grid item key={c.id} xs={12} sm={6} md={4} lg={3} xl={2}>
               <FaderStrip channel={c} adapter={adapter} />
             </Grid>
           ))}
         </Grid>
-        <ChannelEditor
-          open={editing}
-          channels={channels}
-          onClose={() => setEditing(false)}
-          onSaved={() => {
-            setEditing(false);
-            loadChannels().then(setChannels);
-          }}
-        />
       </Container>
     </ThemeProvider>
   );

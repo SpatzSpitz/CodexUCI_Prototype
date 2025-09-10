@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/assets.schema.json",
+  "title": "CodexUCI Assets",
+  "type": "object",
+  "required": ["version", "assets"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "adapters": {
+      "type": "object",
+      "description": "Optionale globale Adapter-Configs (z. B. Hosts, Credentials, Ports)",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/asset" }
+    }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "required": ["id", "name", "category", "adapter", "location", "controls"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9_\\-\\.]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "category": {
+          "type": "string",
+          "enum": ["audio", "light", "sensor", "climate", "video", "custom"]
+        },
+        "adapter": {
+          "type": "string",
+          "description": "z. B. QSYS, GiraX1, Crestron, ArtNet, Shelly, ..."
+        },
+        "location": { "$ref": "#/$defs/location" },
+        "controls": { "$ref": "#/$defs/controls" },
+        "icon": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes": { "type": "string" },
+        "meta": {
+          "type": "object",
+          "description": "frei für spätere Erweiterungen"
+        }
+      },
+      "additionalProperties": false
+    },
+    "location": {
+      "type": "object",
+      "required": ["building", "floor", "room"],
+      "properties": {
+        "building": { "type": "string" },
+        "floor": { "type": "string" },
+        "room": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "controls": {
+      "type": "object",
+      "description": "Map: Control-Key -> Control-Definition",
+      "minProperties": 1,
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "string", "description": "Direkte Ziel-ID (z. B. Q-SYS NamedControl, Gira UID)" },
+          {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": { "type": "string" },
+              "type": {
+                "type": "string",
+                "enum": ["boolean", "range", "integer", "float", "enum", "string"]
+              },
+              "min": { "type": "number" },
+              "max": { "type": "number" },
+              "step": { "type": "number" },
+              "unit": { "type": "string" },
+              "enum": {
+                "type": "array",
+                "items": { "type": ["string", "number", "boolean"] }
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

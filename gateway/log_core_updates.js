@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const channelsPath = path.join(__dirname, '..', 'channels.json');
+const assetsPath = path.join(__dirname, '..', 'config', 'assets.json');
 const host = process.env.QSYS_HOST || '192.168.10.5';
 const port = Number(process.env.QSYS_PORT || 1710);
 const user = process.env.QSYS_USER || 'admin';
@@ -22,10 +22,11 @@ const password = process.env.QSYS_PASSWORD || '';
 const rateSec = Number(process.env.QSYS_RATE || 0.2); // AutoPoll rate in seconds
 const changeGroupId = process.env.QSYS_CG_ID || 'codex-cli';
 
-// Load controls from channels.json
-const cfg = JSON.parse(fs.readFileSync(channelsPath, 'utf-8'));
-const controls = cfg.channels.flatMap(c => [c.controls.gain, c.controls.mute, c.controls.level]);
-const muteSet = new Set(cfg.channels.map(c => c.controls.mute));
+// Load controls from assets.json (audio+QSYS only)
+const raw = JSON.parse(fs.readFileSync(assetsPath, 'utf-8'));
+const audio = (raw.assets || []).filter(a => a && a.category === 'audio' && a.adapter === 'QSYS');
+const controls = audio.flatMap(a => [a.controls?.gain, a.controls?.mute, a.controls?.level]).filter(Boolean);
+const muteSet = new Set(audio.map(a => a.controls?.mute).filter(Boolean));
 
 let socket;
 let buffer = Buffer.alloc(0);

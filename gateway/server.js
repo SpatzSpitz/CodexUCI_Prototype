@@ -4,27 +4,28 @@ import QSysTcpClient from './qsysTcpClient.js';
 import path from 'path';
 import fs from 'fs';
 import http from 'http';
+import { loadAssetsFromFile, writeAssetsToFile } from './assetsLoader.js';
 
 const PORT = Number(process.env.PORT || 8080);
 // QRC endpoint typically requires the /qrc path and the jsonrpc subprotocol
 const QSYS_URL = process.env.QSYS_URL; // only used for WS mode
-const channelsPath = path.join(process.cwd(), '..', 'channels.json');
+const assetsPath = path.join(process.cwd(), '..', 'config', 'assets.json');
 
 let qsys;
 if (QSYS_URL && /^wss?:\/\//i.test(QSYS_URL)) {
   // WebSocket mode (rare for QRC)
-  qsys = new QSysClient(QSYS_URL, channelsPath);
+  qsys = new QSysClient(QSYS_URL, assetsPath);
   console.log(`[Gateway] Starting on port ${PORT} and connecting to Q-SYS WS: ${QSYS_URL}`);
 } else {
   // TCP QRC mode (default)
   const host = process.env.QSYS_HOST || '192.168.10.5';
   const port = Number(process.env.QSYS_PORT || 1710);
-  qsys = new QSysTcpClient(host, port, channelsPath);
+  qsys = new QSysTcpClient(host, port, assetsPath);
   console.log(`[Gateway] Starting on port ${PORT} and connecting to Q-SYS TCP: ${host}:${port}`);
 }
 qsys.connect();
 
-// Create a small HTTP server to serve channels.json and host the WebSocket
+// Create a small HTTP server to serve assets.json and host the WebSocket
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
   // CORS for UI dev server
@@ -38,18 +39,18 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && url.startsWith('/channels.json')) {
+  if (req.method === 'GET' && url.startsWith('/assets.json')) {
     try {
       res.setHeader('Content-Type', 'application/json');
-      fs.createReadStream(channelsPath).pipe(res);
+      fs.createReadStream(assetsPath).pipe(res);
     } catch (e) {
       res.statusCode = 500;
-      res.end(JSON.stringify({ error: 'failed to read channels.json' }));
+      res.end(JSON.stringify({ error: 'failed to read assets.json' }));
     }
     return;
   }
 
-  if (req.method === 'PUT' && url.startsWith('/channels.json')) {
+  if (req.method === 'PUT' && url.startsWith('/assets.json')) {
     // Receive full body
     let body = '';
     req.setEncoding('utf-8');
@@ -57,16 +58,17 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const parsed = JSON.parse(body);
-        if (!parsed || !Array.isArray(parsed.channels)) throw new Error('invalid structure');
-        // Basic normalization: sort by order ascending
-        parsed.channels.sort((a, b) => (Number(a.order||0) - Number(b.order||0)));
-        fs.writeFileSync(channelsPath, JSON.stringify(parsed, null, 2));
+        // Minimal validation
+        if (!parsed || typeof parsed !== 'object') throw new Error('invalid structure');
+        if (!parsed.version || typeof parsed.version !== 'string') throw new Error('missing version');
+        if (!Array.isArray(parsed.assets)) throw new Error('assets must be an array');
+        writeAssetsToFile(assetsPath, parsed);
         // Re-subscribe controls in the backend
         try {
           if (typeof qsys.subscribeAll === 'function') qsys.subscribeAll();
           if (typeof qsys.setupChangeGroup === 'function') qsys.setupChangeGroup();
         } catch (e) {
-          console.warn('re-subscribe after channels update failed:', e && e.message || e);
+          console.warn('re-subscribe after assets update failed:', e && e.message || e);
         }
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ ok: true }));
@@ -129,5 +131,5 @@ qsys.on('update', (msg) => {
 
 server.listen(PORT, () => {
   console.log(`Gateway running on ws://localhost:${PORT}/ws`);
-  console.log(`Serving channels.json at http://localhost:${PORT}/channels.json`);
+  console.log(`Serving assets.json at http://localhost:${PORT}/assets.json`);
 });

@@ -2,6 +2,7 @@ import net from 'net';
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
+import { loadAssetsFromFile, listQsysAudioControls } from './assetsLoader.js';
 
 export default class QSysTcpClient extends EventEmitter {
   constructor(host, port, channelsPath) {
@@ -131,10 +132,10 @@ export default class QSysTcpClient extends EventEmitter {
   }
 
   subscribeAll() {
-    const raw = fs.readFileSync(this.channelsPath, 'utf-8');
-    const cfg = JSON.parse(raw);
-    this.controls = cfg.channels.flatMap(c => [c.controls.gain, c.controls.mute, c.controls.level]);
-    this.muteSet = new Set(cfg.channels.map(c => c.controls.mute));
+    const cfg = loadAssetsFromFile(this.channelsPath);
+    const { controls, muteSet } = listQsysAudioControls(cfg);
+    this.controls = controls;
+    this.muteSet = muteSet;
     // We seed via ChangeGroup polling; explicit subscribe is not required
   }
 

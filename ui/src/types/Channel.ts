@@ -9,4 +9,5 @@ export interface Channel {
   label: string;
   order: number;
   controls: ControlMap;
+  icon?: string;
 }

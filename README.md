@@ -2,14 +2,14 @@
 
 Prototype system demonstrating a web based audio mixer UI and Node.js gateway
 for a Q-SYS Core. The gateway relays WebSocket messages between the browser
-UI and the Q-SYS QRC interface. Channels and control IDs are defined in
-`channels.json` and shared between projects.
+UI and the Q-SYS QRC interface. Assets and control IDs are defined in
+`config/assets.json` and shared between projects.
 
 ## Projects
 
 ### UI (`/ui`)
 * React + TypeScript + Vite
-* Loads channel strips from `channels.json`
+* Loads audio assets from `config/assets.json`
 * Connects to the gateway via WebSocket
 * Dark mode and German translations by default
 
@@ -46,6 +46,14 @@ Troubleshooting connection to Q-SYS
 - Firewall/routing: ensure the machine running the gateway can reach the Core on the chosen port.
 - Logs: the gateway now logs the Q-SYS URL and any socket errors/codes to help diagnose issues.
 
-## channels.json
-`channels.json` describes all seven audio channels used by the prototype and
-is consumed by both the UI and the gateway.
+## assets.json
+`config/assets.json` contains all controllable assets (audio, light, etc.).
+The UI currently renders only `audio` assets with `adapter: "QSYS"` to the
+existing fader view (gain/mute/level preserved). The gateway serves and
+persists this file at `GET/PUT http://localhost:8080/assets.json`.
+
+Schema: see `config/assets.schema.json` (JSON Schema 2020-12). The gateway
+does a light validation (requires `version` and `assets` array). Full schema
+validation may be added later.
+
+Migration: the previous `channels.json` is no longer used.
