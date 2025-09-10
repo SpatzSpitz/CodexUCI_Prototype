@@ -6,8 +6,11 @@
       "note": "Beispiel – bei Bedarf aus ENV beziehen"
     },
     "GiraX1": {
-      "host": "https://192.168.137.173",
-      "auth": { "user": "device", "password": "device" }
+      "host": "https://192.168.60.43",
+      "auth": {
+        "user": "Administrator",
+        "password": "Bluetrac6161"
+      }
     }
   },
   "assets": [
@@ -16,21 +19,32 @@
       "name": "Hand Mic 1",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_HAND_MIC_1_GAIN",
         "mute": "NC_HAND_MIC_1_MUTE",
         "level": "NC_HAND_MIC_1_LEVEL"
       },
       "icon": "headset",
-      "tags": ["speech", "wireless"]
+      "tags": [
+        "speech",
+        "wireless"
+      ]
     },
     {
       "id": "HQ_EG_STAGE_HAND_MIC_2",
       "name": "Hand Mic 2",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_HAND_MIC_2_GAIN",
         "mute": "NC_HAND_MIC_2_MUTE",
@@ -43,7 +57,11 @@
       "name": "Headset 1",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_HEADSET_1_GAIN",
         "mute": "NC_HEADSET_1_MUTE",
@@ -56,7 +74,11 @@
       "name": "Headset 2",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_HEADSET_2_GAIN",
         "mute": "NC_HEADSET_2_MUTE",
@@ -69,7 +91,11 @@
       "name": "AUX",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_AUX_GAIN",
         "mute": "NC_AUX_MUTE",
@@ -82,7 +108,11 @@
       "name": "Bluetooth",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_BLUETOOTH_GAIN",
         "mute": "NC_BLUETOOTH_MUTE",
@@ -95,7 +125,11 @@
       "name": "HDMI",
       "category": "audio",
       "adapter": "QSYS",
-      "location": { "building": "HQ", "floor": "EG", "room": "Stage" },
+      "location": {
+        "building": "HQ",
+        "floor": "EG",
+        "room": "Stage"
+      },
       "controls": {
         "gain": "NC_HDMI_GAIN",
         "mute": "NC_HDMI_MUTE",
@@ -103,28 +137,39 @@
       },
       "icon": "hdmi"
     },
-
     {
       "id": "HQ_OG_LAGER_ARBEITSPLATZ_LIGHT",
       "name": "Lager / OG / Arbeitsplatz – Licht",
       "category": "light",
       "adapter": "GiraX1",
-      "location": { "building": "HQ", "floor": "OG", "room": "Lager Arbeitsplatz" },
+      "location": {
+        "building": "HQ",
+        "floor": "OG",
+        "room": "Lager Arbeitsplatz"
+      },
       "controls": {
-        "power": "a02a",
-        "brightness": { "id": "a02b", "type": "range", "min": 0, "max": 100, "unit": "%" }
+        "power": "a047"
       },
       "icon": "lightbulb",
-      "tags": ["workbench"]
+      "tags": [
+        "workbench"
+      ]
     },
     {
       "id": "HQ_OG_LAGER_ARBEITSPLATZ_SENSOR_LOCK",
       "name": "Lager / OG / Arbeitsplatz – Sensor sperren",
       "category": "sensor",
       "adapter": "GiraX1",
-      "location": { "building": "HQ", "floor": "OG", "room": "Lager Arbeitsplatz" },
+      "location": {
+        "building": "HQ",
+        "floor": "OG",
+        "room": "Lager Arbeitsplatz"
+      },
       "controls": {
-        "enabled": { "id": "a010", "type": "boolean" }
+        "enabled": {
+          "id": "a010",
+          "type": "boolean"
+        }
       },
       "icon": "shield-off",
       "notes": "Taster 1 sperrt Sensor (enabled=false), Taster 2 schaltet Licht."

@@ -1,7 +1,8 @@
 import fs from 'fs';
-import Ajv from 'ajv';
+import Ajv2020 from 'ajv/dist/2020.js';
 
-const ajv = new Ajv({ allErrors: true, strict: false });
+// Use 2020-12 dialect to match schema's $schema
+const ajv = new Ajv2020({ allErrors: true, strict: false });
 let validateFn = null;
 
 export function loadSchema(schemaPath) {

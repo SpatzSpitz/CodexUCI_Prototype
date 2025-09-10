@@ -2,6 +2,7 @@
 import FaderStrip from './components/FaderStrip';
 import LightCard from './components/LightCard';
 import StatusBar from './components/StatusBar';
+import AssetEditor from './components/AssetEditor';
 import { QSysAdapter } from './adapters/QSysAdapter';
 import { Channel } from './types/Channel';
 import { Asset } from './types/Asset';
@@ -17,6 +18,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 import { useAssetsByLocation } from './hooks/useAssetsByLocation';
 import { useAssetsByCategory } from './hooks/useAssetsByCategory';
 
@@ -25,6 +27,7 @@ const adapter = new QSysAdapter();
 export default function App() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [status, setStatus] = useState('connecting');
+  const [editingAssets, setEditingAssets] = useState(false);
   const [mode, setMode] = useState<'byLocation' | 'byCategory'>('byLocation');
   const [activeCategory, setActiveCategory] = useState<string>('audio');
   const [selection, setSelection] = useState<{ building?: string; floor?: string; room?: string }>({});
@@ -62,6 +65,7 @@ export default function App() {
             <Tab label="Orte" />
             <Tab label="Kategorien" />
           </Tabs>
+          <Button variant="outlined" size="small" onClick={() => setEditingAssets(true)}>Assets verwalten</Button>
         </Stack>
         <Grid container spacing={2} alignItems="stretch">
           <Grid item xs={12} md={3} lg={2}>
@@ -168,6 +172,11 @@ export default function App() {
           </Grid>
         </Grid>
       </Container>
+      <AssetEditor
+        open={editingAssets}
+        onClose={() => setEditingAssets(false)}
+        onSaved={() => { setEditingAssets(false); loadAssets().then(setAssets); }}
+      />
     </ThemeProvider>
   );
 }

@@ -26,8 +26,9 @@ function logValidationWarnings(result) {
 // Adapter Manager + Q-SYS adapter
 const adapters = new AdapterManager(assetsPath);
 const qsysAdapter = new QSysAdapter(assetsPath);
+const giraAdapter = new GiraAdapter(assetsPath);
 adapters.registerAdapter('QSYS', qsysAdapter);
-adapters.registerAdapter('GiraX1', new GiraAdapter());
+adapters.registerAdapter('GiraX1', giraAdapter);
 adapters.connectAll();
 
 // Initial validation (warn-only) and load assets into manager
@@ -88,39 +89,23 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Proxy: GET /adapters/gira/uiconfig -> adapters.GiraX1.host/api/v2/uiconfig
+  // Proxy: GET /adapters/gira/uiconfig -> use adapter token to call /api/v2/uiconfig
   if (req.method === 'GET' && url.startsWith('/adapters/gira/uiconfig')) {
-    try {
-      const cfg = loadAssetsFromFile(assetsPath);
-      const gira = cfg?.adapters?.GiraX1;
-      if (!gira || !gira.host) throw new Error('GiraX1 adapter config missing');
-      const targetBase = gira.host.replace(/\/$/, '');
-      const query = (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '');
-      const targetUrl = `${targetBase}/api/v2/uiconfig${query}`;
-      const u = new URL(targetUrl);
-      const client = u.protocol === 'https:' ? https : http;
-      const headers = {};
-      if (gira.auth && gira.auth.user) {
-        const token = Buffer.from(`${gira.auth.user}:${gira.auth.password || ''}`).toString('base64');
-        headers['Authorization'] = `Basic ${token}`;
-      }
-      const options = { method: 'GET', headers };
-      const req2 = client.request(u, options, (res2) => {
-        res.statusCode = res2.statusCode || 502;
-        for (const [k, v] of Object.entries(res2.headers)) {
-          if (k && v) res.setHeader(k, v);
+    (async () => {
+      try {
+        // Ensure we have a token registered
+        if (!giraAdapter.token) {
+          await giraAdapter.register();
         }
-        res2.pipe(res);
-      });
-      req2.on('error', (e) => {
-        res.statusCode = 502;
-        res.end(JSON.stringify({ error: 'gira proxy failed', message: String(e && e.message || e) }));
-      });
-      req2.end();
-    } catch (e) {
-      res.statusCode = 500;
-      res.end(JSON.stringify({ error: 'gira proxy error', message: String(e && e.message || e) }));
-    }
+        // Request extended uiconfig so locations/parameters/flags are available to the UI
+        const data = await giraAdapter.getJson('/api/v2/uiconfig?expand=locations,parameters,dataPointFlags');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(data));
+      } catch (e) {
+        res.statusCode = 500;
+        res.end(JSON.stringify({ error: 'gira proxy error', message: String(e && e.message || e) }));
+      }
+    })();
     return;
   }
 

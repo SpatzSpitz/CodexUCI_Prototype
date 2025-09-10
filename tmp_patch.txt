@@ -1,0 +1,63 @@
+*** Begin Patch
+*** Update File: ui/src/components/AssetEditor.tsx
+@@
+-import type { Asset } from '../types/Asset';
+-import { loadAssets, saveAssets, fetchGiraUiConfig } from '../config/assets.loader';
++import type { Asset } from '../types/Asset';
++import { loadAssetsDoc, saveAssets, fetchGiraUiConfig } from '../config/assets.loader';
+@@
+-  const [pickerIdx, setPickerIdx] = useState<{ asset: number; controlKey: string } | null>(null);
+-  const [uiconfig, setUiconfig] = useState<any>(null);
++  const [pickerIdx, setPickerIdx] = useState<{ asset: number; controlKey: string } | null>(null);
++  const [uiconfig, setUiconfig] = useState<any>(null);
++  const [doc, setDoc] = useState<any>(null);
+@@
+-  useEffect(() => {
+-    if (open) loadAssets().then(setAssets);
+-  }, [open]);
++  useEffect(() => {
++    if (open) {
++      loadAssetsDoc().then(d => { setDoc(d); setAssets(d.assets || []); });
++    }
++  }, [open]);
+@@
+-  const save = async () => {
++  const save = async () => {
+     setBusy(true);
+     try {
+-      const payload = { version: '1.0.0', adapters: extractAdapters(), assets } as any;
++      const payload = { ...(doc || {}), assets } as any;
+       const res = await saveAssets(payload);
+       if (!res.ok) throw new Error(await res.text());
+       onSaved();
+     } catch (e: any) {
+-      alert('Speichern fehlgeschlagen: ' + e.message + '\nBitte Gateway-Log auf Warnungen prOfen.');
++      alert('Speichern fehlgeschlagen: ' + e.message + '\nBitte Gateway-Log auf Warnungen prüfen.');
+     } finally {
+       setBusy(false);
+     }
+   };
+-
+-  const extractAdapters = () => {
+-    // Keep existing adapter configs by reloading fresh and copying over
+-    // This ensures we don't drop adapter settings when saving assets only
+-    return (uiconfig && uiconfig.__adapters) || {};
+-  };
+-
+-  const ensureAdaptersLoaded = async () => {
+-    // Piggy-back on the uiconfig fetch to also stash current adapters config
+-    const current = await loadAssets();
+-    setUiconfig((prev: any) => ({ ...(prev || {}), __adapters: (current as any).adapters || {} }));
+-  };
+@@
+-    setPickerIdx({ asset: assetIdx, controlKey });
+-    await ensureAdaptersLoaded();
++    setPickerIdx({ asset: assetIdx, controlKey });
+     try {
+       const data = await fetchGiraUiConfig();
+       setUiconfig((prev: any) => ({ ...(prev || {}), data }));
+     } catch (e: any) {
+       alert('Gira uiconfig Laden fehlgeschlagen: ' + (e.message || e));
+     }
+   };
+*** End Patch
